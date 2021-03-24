@@ -45,6 +45,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: hashicorp/setup-terraform@v1
+      with:
+       terraform_wrapper: false
 
     - name: Terraform Init
       id: init
@@ -57,9 +59,7 @@ jobs:
     - name: Terraform Show
       id: show
       run: terraform show -json filetest.tfplan > ./myfiletest.json
-    - run: echo ${{ steps.init.outputs.stdout }}
-    - run: echo ${{ steps.init.outputs.stderr }}
-    - run: echo ${{ steps.init.outputs.exitcode }}
+
     - name: Run Pester tests (PowerShell)
       run: |
         Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
