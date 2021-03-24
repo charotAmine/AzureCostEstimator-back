@@ -1,6 +1,6 @@
 using namespace System.Net
-
 param($Request, $TriggerMetadata)
+
 function Get-DefaultInformation($serviceType, $serviceObject, $serviceProperties)
 {
     $skuPropertyName = ($serviceProperties | Select -ExpandProperty $serviceType).skuName
@@ -32,6 +32,7 @@ function Get-DefaultInformation($serviceType, $serviceObject, $serviceProperties
     }
     return $sku
 }
+
 function Get-DefaultUrl($serviceType, $serviceObject, $serviceProperties) {
     $sku = Get-DefaultInformation $serviceType $serviceObject $serviceProperties
     $url = "https://prices.azure.com/api/retail/prices?" + '$filter=' + "serviceName eq '$serviceType' and armRegionName eq '$($serviceObject.location)' and skuName eq '$($sku)'"
@@ -90,10 +91,8 @@ Function convertFrom-Terraform($body)
     return $list
 }
 
-
 $jsonList = New-Object System.Collections.ArrayList
-
-$serviceProperties = Get-Content -Raw -Path "./HttpTrigger1/terraformEditorParameters.json" | ConvertFrom-Json
+$serviceProperties = Get-Content -Raw -Path "./terraformEditorParameters.json" | ConvertFrom-Json
 $resources = convertFrom-Terraform -body $Request.Body
 
 foreach ($resource in $resources) {
@@ -128,8 +127,9 @@ foreach ($resource in $resources) {
         Default {}
     }
 }
+
 $jsonFinal = ConvertTo-Json $jsonList -Depth 10
-# Associate values to output bindings by calling 'Push-OutputBinding'.
+
 Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
     StatusCode = [HttpStatusCode]::OK
     Body = $jsonFinal
