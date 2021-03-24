@@ -22,6 +22,7 @@ jobs:
       run: |
         Rename-Item -path azurecostestimator-general -newName azurecostestimator-general-test
         $env:AZURE_FUNCTIONAPP_PACKAGE_PATH = "azurecostestimator-general-test"
+        Write-Host ${{ steps.fa.outputs.app-url }}
       shell: powershell
 
     - name: 'Run Azure Functions Action'
@@ -32,6 +33,10 @@ jobs:
         slot-name: 'test'
         package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
         publish-profile: ${{ secrets.publishprofile_test }}
+    - name: test url
+      run: |
+        Write-Host ${{ steps.fa.outputs.app-url }}
+      shell: powershell
 
   test-azure-cost:
     needs: deploy-to-test 
