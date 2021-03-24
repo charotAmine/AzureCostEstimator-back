@@ -1,7 +1,7 @@
 BeforeAll {
     function Get-Services ()
     {
-        $body = Get-Content "./tempFile.json" -raw
+        $body = Get-Content "./myfiletest.json" -raw
         $testUri = iwr -Method POST -Uri "https://azurecostestimator-back-test.azurewebsites.net/api/azurecostestimator-general?code=d4y7ODGl247hAAy84Dh1k2Rdxyhv6v/QCk7TYcDLIfrxnzYLfYOHVQ==" -Body $body -ContentType "application/json"
         return $testUri.Content | convertFrom-Json
     }
@@ -18,7 +18,7 @@ BeforeAll {
     }
     function Get-numberOfServices ()
     {
-        $jsonFile = (Get-Content "./tempFile.json" -raw) | ConvertFrom-Json
+        $jsonFile = (Get-Content "./myfiletest.json" -raw) | ConvertFrom-Json
         $resources = convertFrom-Terraform -Body $jsonFile
         $i=0
         foreach ($resource in $resources) {

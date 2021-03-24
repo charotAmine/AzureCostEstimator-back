@@ -29,7 +29,7 @@ jobs:
         publish-profile: ${{ secrets.publishprofile_test }}
 
   test-azure-cost:
-    
+
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
@@ -56,3 +56,7 @@ jobs:
     - name: Terraform Show
       id: show
       run: terraform show -json filetest.tfplan > ./myfiletest.json
+
+    - name: Show JSON File
+      id: mre
+      run: more ./myfiletest.json
