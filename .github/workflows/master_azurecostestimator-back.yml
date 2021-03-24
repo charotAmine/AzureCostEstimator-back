@@ -18,6 +18,11 @@ jobs:
     steps:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@master
+    - name: Rename function
+      run: |
+        Rename-Item -path azurecostestimator-general -newName azurecostestimator-general-test
+        $env:AZURE_FUNCTIONAPP_PACKAGE_PATH = "azurecostestimator-general-test"
+      shell: powershell
 
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
