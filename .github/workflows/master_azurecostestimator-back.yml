@@ -57,9 +57,9 @@ jobs:
     - name: Terraform Show
       id: show
       run: terraform show -json filetest.tfplan > ./myfiletest.json
-    - run: echo ${{ steps.plan.outputs.stdout }}
-    - run: echo ${{ steps.plan.outputs.stderr }}
-    - run: echo ${{ steps.plan.outputs.exitcode }}
+    - run: echo ${{ steps.init.outputs.stdout }}
+    - run: echo ${{ steps.init.outputs.stderr }}
+    - run: echo ${{ steps.init.outputs.exitcode }}
     - name: Run Pester tests (PowerShell)
       run: |
         Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
