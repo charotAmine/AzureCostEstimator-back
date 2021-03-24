@@ -26,4 +26,4 @@ jobs:
         app-name: 'azurecostestimator-back'
         slot-name: 'test'
         package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_51bfd298f2c34fdbbcf1a00214ea9bc1 }}
+        publish-profile: ${{ secrets.publishprofile_test }}
