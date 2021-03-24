@@ -93,7 +93,7 @@ Function convertFrom-Terraform($body)
 
 $jsonList = New-Object System.Collections.ArrayList
 
-$serviceProperties = Get-Content -Raw -Path "./HttpTrigger1/terraformEditorParameters.json" | ConvertFrom-Json
+$serviceProperties = Get-Content -Raw -Path "./terraformEditorParameters.json" | ConvertFrom-Json
 $resources = convertFrom-Terraform -body $Request.Body
 
 foreach ($resource in $resources) {
