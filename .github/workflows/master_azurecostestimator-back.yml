@@ -61,7 +61,7 @@ jobs:
     - name: Run Pester tests (PowerShell)
       run: |
         Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
-        $dire = dir
+        $dire = cat "./myfiletest.json"
         Write-host $dire
         Set-PSRepository psgallery -InstallationPolicy trusted
         Install-Module -Name Pester -RequiredVersion 5.0.4 -Confirm:$false -Force
