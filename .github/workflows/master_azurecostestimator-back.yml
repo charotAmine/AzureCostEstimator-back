@@ -59,4 +59,4 @@ jobs:
 
     - name: Show JSON File
       id: mre
-      run: more ./myfiletest.json
+      run: more myfiletest.json
