@@ -13,7 +13,7 @@ env:
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
 
 jobs:
-  build-and-deploy:
+  deploy-to-test:
     runs-on: windows-latest
     steps:
     - name: 'Checkout GitHub Action'
@@ -27,3 +27,32 @@ jobs:
         slot-name: 'test'
         package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
         publish-profile: ${{ secrets.publishprofile_test }}
+
+  test-azure-cost:
+    
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+
+    runs-on: windows-latest
+    defaults:
+       run:
+         working-directory: "./tests"
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Init
+      id: init
+      run: terraform init
+
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -no-color -out filetest.tfplan
+
+    - name: Terraform Show
+      id: show
+      run: terraform show -json filetest.tfplan > ./myfiletest.json
