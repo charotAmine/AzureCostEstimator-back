@@ -2,7 +2,7 @@ BeforeAll {
     function Get-Services ()
     {
         $body = Get-Content "./myfiletest.json" -raw
-        $testUri = iwr -Method POST -Uri $env:FUNCTION_TEST_URL -Body $body -ContentType "application/json"
+        $testUri = iwr -Method POST -Uri $env:FUNCTION_URL -Body $body -ContentType "application/json"
         return $testUri.Content | convertFrom-Json
     }
     Function convertFrom-Terraform($body)
