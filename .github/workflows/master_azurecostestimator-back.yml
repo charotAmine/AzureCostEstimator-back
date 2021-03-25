@@ -77,7 +77,7 @@ jobs:
         Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
         Set-PSRepository psgallery -InstallationPolicy trusted
         Install-Module -Name Pester -RequiredVersion 5.0.4 -Confirm:$false -Force
-        $url = ${{ needs.deploy-to-test.outputs.url }}
+        $url = "${{ needs.deploy-to-test.outputs.url }}"
         $package = $env:AZURE_FUNCTIONAPP_PACKAGE_PATH
         $url += "/" + $package + $env:FUNCTION_URL_CODE
         $env:FUNCTION_URL = $url
