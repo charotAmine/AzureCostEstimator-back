@@ -9,11 +9,11 @@ on:
       - master
   workflow_dispatch:
 
-env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
 
 jobs:
   deploy-to-test:
+    env:
+      AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
     runs-on: windows-latest
     outputs:
       url: ${{ steps.fa.outputs.app-url }}
