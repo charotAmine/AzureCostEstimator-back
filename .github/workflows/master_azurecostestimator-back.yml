@@ -17,6 +17,7 @@ jobs:
     runs-on: windows-latest
     outputs:
       url: ${{ steps.fa.outputs.app-url }}
+      package-name: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
     steps:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@master
@@ -77,8 +78,10 @@ jobs:
         Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
         Set-PSRepository psgallery -InstallationPolicy trusted
         Install-Module -Name Pester -RequiredVersion 5.0.4 -Confirm:$false -Force
+        
         $url = "${{ needs.deploy-to-test.outputs.url }}"
-        $package = $env:AZURE_FUNCTIONAPP_PACKAGE_PATH
+        $package = "${{ needs.package-name.outputs.url }}"
+        
         $url += "/" + $package + $env:FUNCTION_URL_CODE
         $env:FUNCTION_URL = $url
               Write-host $url
