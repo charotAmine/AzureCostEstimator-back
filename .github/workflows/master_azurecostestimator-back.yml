@@ -17,17 +17,18 @@ jobs:
     runs-on: windows-latest
     outputs:
       url: ${{ steps.fa.outputs.app-url }}
-      package-name: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+      package-name: ${{ steps.rename.outputs.package-name }}
     steps:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@master
     - name: Rename function
+      id: rename
       run: |
         Rename-Item -path azurecostestimator-general -newName azurecostestimator-general-test
         $env:AZURE_FUNCTIONAPP_PACKAGE_PATH = "azurecostestimator-general-test"
         Write-Host ${{ steps.fa.outputs.app-url }}
+        echo "::set-output name=package-name::${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}"
       shell: powershell
-
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
       id: fa
