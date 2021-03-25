@@ -21,15 +21,15 @@ jobs:
     steps:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@master
+      
     - name: Rename function
       id: rename
       run: |
-        Rename-Item -path azurecostestimator-general -newName azurecostestimator-general-test
         $funName = "azurecostestimator-general-ttt"
-        $env:AZURE_FUNCTIONAPP_PACKAGE_PATH = $funName
-        Write-Host ${{ steps.fa.outputs.app-url }}
+        Rename-Item -path azurecostestimator-general -newName $funName
         echo "::set-output name=package-name::$funName"
       shell: powershell
+      
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
       id: fa
