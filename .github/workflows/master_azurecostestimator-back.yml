@@ -81,6 +81,7 @@ jobs:
         $package = $env:AZURE_FUNCTIONAPP_PACKAGE_PATH
         $url += "/" + $package + $env:FUNCTION_URL_CODE
         $env:FUNCTION_URL = $url
+              Write-host $url
         Invoke-Pester -Path "./"
         if ($Error[0].Fullyqualifiederrorid -eq 'PesterAssertionFailed') {exit 1}
       shell: powershell
