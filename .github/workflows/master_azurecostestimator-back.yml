@@ -25,7 +25,7 @@ jobs:
       id: rename
       run: |
         Rename-Item -path azurecostestimator-general -newName azurecostestimator-general-test
-        $env:AZURE_FUNCTIONAPP_PACKAGE_PATH = "azurecostestimator-general-test"
+        $env:AZURE_FUNCTIONAPP_PACKAGE_PATH = "azurecostestimator-general-ttt"
         Write-Host ${{ steps.fa.outputs.app-url }}
         echo "::set-output name=package-name::${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}"
       shell: powershell
