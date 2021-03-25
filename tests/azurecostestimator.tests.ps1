@@ -17,6 +17,7 @@ BeforeAll {
 # Pester tests
 Describe 'Get-Pricing' {
   It "List all pricing" {
+    Write-Host $env:FUNCTION_URL
     $allServices = Get-Services
     $shouldBe = Get-numberOfServices
     $allServices.Count | Should -Be $shouldBe
