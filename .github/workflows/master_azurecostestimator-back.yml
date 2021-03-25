@@ -25,9 +25,10 @@ jobs:
       id: rename
       run: |
         Rename-Item -path azurecostestimator-general -newName azurecostestimator-general-test
-        $env:AZURE_FUNCTIONAPP_PACKAGE_PATH = "azurecostestimator-general-ttt"
+        $funName = "azurecostestimator-general-ttt"
+        $env:AZURE_FUNCTIONAPP_PACKAGE_PATH = $funName
         Write-Host ${{ steps.fa.outputs.app-url }}
-        echo "::set-output name=package-name::${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}"
+        echo "::set-output name=package-name::$funName"
       shell: powershell
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
