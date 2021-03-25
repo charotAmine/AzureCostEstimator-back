@@ -33,10 +33,6 @@ jobs:
         slot-name: 'test'
         package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
         publish-profile: ${{ secrets.publishprofile_test }}
-    - name: test url
-      run: |
-        Write-Host ${{ steps.fa.outputs.app-url }}
-      shell: powershell
 
   test-azure-cost:
     needs: deploy-to-test 
@@ -69,6 +65,10 @@ jobs:
     - name: Terraform Show
       id: show
       run: terraform show -json filetest.tfplan > ./myfiletest.json
+    - name: test url
+      run: |
+        Write-Host ${{ steps.fa.outputs.app-url }}
+      shell: powershell
 
     - name: Run Pester tests (PowerShell)
       run: |
