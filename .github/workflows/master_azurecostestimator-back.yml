@@ -43,7 +43,7 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
-      FUNCTION_URL: ${{ secrets.FUNCTION_TEST_URL }}
+      FUNCTION_URL_CODE: ${{ secrets.FUNCTION_TEST_CODE }}
 
     runs-on: windows-latest
     defaults:
@@ -78,6 +78,10 @@ jobs:
         Set-PSRepository psgallery -InstallationPolicy trusted
         Install-Module -Name Pester -RequiredVersion 5.0.4 -Confirm:$false -Force
         Install-Module -Name Az -Confirm:$false -Force
+        $url = ${{ needs.deploy-to-test.outputs.url }}
+        $package = $env:AZURE_FUNCTIONAPP_PACKAGE_PATH
+        $url += "/" + $package + $env:FUNCTION_URL_CODE
+        $env:FUNCTION_URL = $url
         Invoke-Pester -Path "./"
         if ($Error[0].Fullyqualifiederrorid -eq 'PesterAssertionFailed') {exit 1}
       shell: powershell
