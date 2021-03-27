@@ -65,7 +65,7 @@ The idea of tests is to take the Terraform file, get the Json file and deploy a 
 
 Once the tests are OK, and you got an approval, your code will be merged to a master Function : 
 
-![Alt text](./archi.PNG?raw=true "Test")
+![Alt text](./archi.png?raw=true "Test")
 
 ## Versioning
 
