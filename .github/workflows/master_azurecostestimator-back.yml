@@ -47,6 +47,8 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
       FUNCTION_URL_CODE: ${{ secrets.FUNCTION_TEST_CODE }}
+      ARM_RESOURCE_GROUP: ${{ secrets.ARM_RESOURCE_GROUP }}
+
 
     runs-on: windows-latest
     defaults:
@@ -89,4 +91,34 @@ jobs:
               Write-host $url
         Invoke-Pester -Path "./"
         if ($Error[0].Fullyqualifiederrorid -eq 'PesterAssertionFailed') {exit 1}
+      shell: powershell
+      
+    - name: Remove function test
+      run: |
+        $SubscriptionID = $env:ARM_SUBSCRIPTION_ID
+        $resourceGroup = $env:ARM_RESOURCE_GROUP
+        $webapp = "azurecostestimator-back"
+        $function = "${{ needs.deploy-to-test.outputs.package-name }}"
+        $tenantID = $env:ARM_TENANT_ID
+        $tokenEndpoint = "https://login.microsoftonline.com/$tenantID/oauth2/token"
+        $contributorId = $ARM_CLIENT_ID
+        $contributorSecret = $ARM_CLIENT_SECRET
+        $contributorSecret = [uri]::EscapeDataString($contributorSecret)
+
+        $tokenBody = [string]::Concat("grant_type=client_credentials&client_id=", $contributorId.ToString(), `
+                                          "&client_secret=", $contributorSecret.ToString(), `
+                                          "&resource=https://management.azure.com&scope=openid+offline_access")
+        $tokenHeaders = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+        $tokenHeaders.Add('Content-Type','application/x-www-form-urlencoded')
+        $tokenResponse = Invoke-WebRequest -Uri $tokenEndpoint -Method POST -Body $tokenBody -Headers $tokenHeaders
+        $tokenContent = ConvertFrom-Json -InputObject $tokenResponse.Content
+        $token = [string]::Concat($tokenContent.token_type, " ", $tokenContent.access_token)
+        Write-Host "Token received" -ForegroundColor Green
+
+        $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+        $headers.Add('Authorization', $token.ToString())
+        $headers.Add('Content-Type','application/json')
+        $apiUrl =[string]::Concat("https://management.azure.com/subscriptions/$SubscriptionID/resourceGroups/", $resourceGroup,"/providers/Microsoft.Web/sites/", $webapp, "/functions/", $function, "?api-version=2016-08-01")
+
+        Invoke-RestMethod -Uri $apiUrl -Headers $headers -Method DELETE -ContentType "application/json"
       shell: powershell
