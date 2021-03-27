@@ -25,7 +25,7 @@ jobs:
     - name: Rename function
       id: rename
       run: |
-        $funName = "azurecostestimator-general-ttt"
+        $funName = "azurecostestimator-general" + $(get-date -f MMddyyyyHHmmss)
         Rename-Item -path azurecostestimator-general -newName $funName
         echo "::set-output name=package-name::$funName"
       shell: powershell
