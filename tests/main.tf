@@ -28,3 +28,25 @@ resource "azurerm_storage_account" "example" {
     environment = "staging"
   }
 }
+
+resource "azurerm_api_management" "example_apim" {
+  name                = "example-apim"
+  resource_group_name      = azurerm_resource_group.tfimportarticle.name
+  location                 = azurerm_resource_group.tfimportarticle.location
+  publisher_name      = "My Company"
+  publisher_email     = "company@terraform.io"
+
+  sku_name = "Developer_1"
+
+  policy {
+    xml_content = <<XML
+    <policies>
+      <inbound />
+      <backend />
+      <outbound />
+      <on-error />
+    </policies>
+XML
+
+  }
+}
