@@ -101,8 +101,8 @@ jobs:
         $function = "${{ needs.deploy-to-test.outputs.package-name }}"
         $tenantID = $env:ARM_TENANT_ID
         $tokenEndpoint = "https://login.microsoftonline.com/$tenantID/oauth2/token"
-        $contributorId = $ARM_CLIENT_ID
-        $contributorSecret = $ARM_CLIENT_SECRET
+        $contributorId = $env:ARM_CLIENT_ID
+        $contributorSecret = $env:ARM_CLIENT_SECRET
         $contributorSecret = [uri]::EscapeDataString($contributorSecret)
 
         $tokenBody = [string]::Concat("grant_type=client_credentials&client_id=", $contributorId.ToString(), `
