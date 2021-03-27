@@ -80,6 +80,7 @@ jobs:
         $url = ${{ needs.deploy-to-test.outputs.url }}
         $package = $env:AZURE_FUNCTIONAPP_PACKAGE_PATH
         $url += "/" + $package + $env:FUNCTION_URL_CODE
+        Write-host $url
         $env:FUNCTION_URL = $url
         Invoke-Pester -Path "./"
         if ($Error[0].Fullyqualifiederrorid -eq 'PesterAssertionFailed') {exit 1}
