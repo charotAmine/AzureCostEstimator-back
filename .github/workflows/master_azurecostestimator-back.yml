@@ -3,30 +3,28 @@
 
 name: Build and deploy Powershell project to Azure Function App - azurecostestimator-back
 
-on:
-  push:
-    branches:
-      - master
-  workflow_dispatch:
-
-env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
+on: pull_request
 
 jobs:
   deploy-to-test:
+    env:
+      AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
     runs-on: windows-latest
     outputs:
       url: ${{ steps.fa.outputs.app-url }}
+      package-name: ${{ steps.rename.outputs.package-name }}
     steps:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@master
+      
     - name: Rename function
+      id: rename
       run: |
-        Rename-Item -path azurecostestimator-general -newName azurecostestimator-general-test
-        $env:AZURE_FUNCTIONAPP_PACKAGE_PATH = "azurecostestimator-general-test"
-        Write-Host ${{ steps.fa.outputs.app-url }}
+        $funName = "azurecostestimator-general" + $(get-date -f MMddyyyyHHmmss)
+        Rename-Item -path azurecostestimator-general -newName $funName
+        echo "::set-output name=package-name::$funName"
       shell: powershell
-
+      
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
       id: fa
@@ -44,6 +42,8 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
       FUNCTION_URL_CODE: ${{ secrets.FUNCTION_TEST_CODE }}
+      ARM_RESOURCE_GROUP: ${{ secrets.ARM_RESOURCE_GROUP }}
+
 
     runs-on: windows-latest
     defaults:
@@ -76,12 +76,42 @@ jobs:
       run: |
         Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
         Set-PSRepository psgallery -InstallationPolicy trusted
-        Install-Module -Name Pester -RequiredVersion 5.0.4 -Confirm:$false -Force
-        $url = ${{ needs.deploy-to-test.outputs.url }}
-        $package = $env:AZURE_FUNCTIONAPP_PACKAGE_PATH
-        $url += "/" + $package + $env:FUNCTION_URL_CODE
-        Write-host $url
+        Install-Module -Name Pester -RequiredVersion 5.0.4 -Confirm:$false -Force        
+        $url = "${{ needs.deploy-to-test.outputs.url }}"
+        $package = "${{ needs.deploy-to-test.outputs.package-name }}" 
+        $url += "/api/" + $package + $env:FUNCTION_URL_CODE
         $env:FUNCTION_URL = $url
+              Write-host $url
         Invoke-Pester -Path "./"
         if ($Error[0].Fullyqualifiederrorid -eq 'PesterAssertionFailed') {exit 1}
+      shell: powershell
+      
+    - name: Remove function test
+      run: |
+        $SubscriptionID = $env:ARM_SUBSCRIPTION_ID
+        $resourceGroup = $env:ARM_RESOURCE_GROUP
+        $webapp = "azurecostestimator-back"
+        $function = "${{ needs.deploy-to-test.outputs.package-name }}"
+        $tenantID = $env:ARM_TENANT_ID
+        $tokenEndpoint = "https://login.microsoftonline.com/$tenantID/oauth2/token"
+        $contributorId = $env:ARM_CLIENT_ID
+        $contributorSecret = $env:ARM_CLIENT_SECRET
+        $contributorSecret = [uri]::EscapeDataString($contributorSecret)
+
+        $tokenBody = [string]::Concat("grant_type=client_credentials&client_id=", $contributorId.ToString(), `
+                                          "&client_secret=", $contributorSecret.ToString(), `
+                                          "&resource=https://management.azure.com&scope=openid+offline_access")
+        $tokenHeaders = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+        $tokenHeaders.Add('Content-Type','application/x-www-form-urlencoded')
+        $tokenResponse = Invoke-WebRequest -Uri $tokenEndpoint -Method POST -Body $tokenBody -Headers $tokenHeaders
+        $tokenContent = ConvertFrom-Json -InputObject $tokenResponse.Content
+        $token = [string]::Concat($tokenContent.token_type, " ", $tokenContent.access_token)
+        Write-Host "Token received" -ForegroundColor Green
+
+        $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+        $headers.Add('Authorization', $token.ToString())
+        $headers.Add('Content-Type','application/json')
+        $apiUrl =[string]::Concat("https://management.azure.com/subscriptions/$SubscriptionID/resourceGroups/", $resourceGroup,"/providers/Microsoft.Web/sites/", $webapp, "/functions/", $function, "?api-version=2016-08-01")
+
+        Invoke-RestMethod -Uri $apiUrl -Headers $headers -Method DELETE -ContentType "application/json"
       shell: powershell
