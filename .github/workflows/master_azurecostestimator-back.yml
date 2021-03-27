@@ -76,11 +76,9 @@ jobs:
       run: |
         Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
         Set-PSRepository psgallery -InstallationPolicy trusted
-        Install-Module -Name Pester -RequiredVersion 5.0.4 -Confirm:$false -Force
-        
+        Install-Module -Name Pester -RequiredVersion 5.0.4 -Confirm:$false -Force        
         $url = "${{ needs.deploy-to-test.outputs.url }}"
-        $package = "${{ needs.deploy-to-test.outputs.package-name }}"
-        
+        $package = "${{ needs.deploy-to-test.outputs.package-name }}" 
         $url += "/api/" + $package + $env:FUNCTION_URL_CODE
         $env:FUNCTION_URL = $url
               Write-host $url
