@@ -39,6 +39,13 @@ function Get-DefaultUrl($serviceType, $serviceObject, $serviceProperties) {
     return $url
 }
 
+function Get-APIManagementUrl($serviceType, $serviceObject, $serviceProperties) {
+    $skuApim = Get-DefaultInformation $serviceType $serviceObject $serviceProperties
+    $sku = $skuApim.split("_")[0]
+    $url = "https://prices.azure.com/api/retail/prices?" + '$filter=' + "serviceName eq '$serviceType' and armRegionName eq '$($serviceObject.location)' and skuName eq '$($sku)'"
+    return $url
+}
+
 function Get-StorageUrl($serviceType, $serviceObject, $serviceProperties){
     $sku = Get-DefaultInformation $serviceType $serviceObject $serviceProperties
     $productName = $serviceObject.account_kind
@@ -119,6 +126,16 @@ foreach ($resource in $resources) {
             $jsonBase = @{}
             $serviceType = "Storage"
             $url = Get-StorageUrl -serviceType $serviceType -serviceObject $resource.resourceChangement -serviceProperties $serviceProperties
+            $list = Get-ServicePrice -url $url
+            $jsonBase.Add("serviceType",$serviceType)
+            $jsonBase.Add("serviceDetails",@($list))
+            $jsonList.Add($jsonBase)
+        }
+
+        "api management" {
+            $jsonBase = @{}
+            $serviceType = "API Management"
+            $url = Get-APIManagementUrl -serviceType $serviceType -serviceObject $resource.resourceChangement -serviceProperties $serviceProperties
             $list = Get-ServicePrice -url $url
             $jsonBase.Add("serviceType",$serviceType)
             $jsonBase.Add("serviceDetails",@($list))
