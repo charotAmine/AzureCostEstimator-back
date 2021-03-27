@@ -87,6 +87,7 @@ jobs:
       shell: powershell
       
     - name: Remove function test
+      if: always()
       run: |
         $SubscriptionID = $env:ARM_SUBSCRIPTION_ID
         $resourceGroup = $env:ARM_RESOURCE_GROUP
