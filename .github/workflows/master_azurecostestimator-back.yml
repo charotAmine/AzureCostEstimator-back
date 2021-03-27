@@ -3,12 +3,7 @@
 
 name: Build and deploy Powershell project to Azure Function App - azurecostestimator-back
 
-on:
-  push:
-    branches:
-      - master
-  workflow_dispatch:
-
+on: pull_request
 
 jobs:
   deploy-to-test:
