@@ -116,3 +116,8 @@ jobs:
 
         Invoke-RestMethod -Uri $apiUrl -Headers $headers -Method DELETE -ContentType "application/json"
       shell: powershell
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v2
+      with:
+        name: testedJson.json
+        path: myfiletest.json
