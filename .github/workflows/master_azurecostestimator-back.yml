@@ -84,7 +84,7 @@ jobs:
         $url = "${{ needs.deploy-to-test.outputs.url }}"
         $package = "${{ needs.deploy-to-test.outputs.package-name }}"
         
-        $url += "/" + $package + $env:FUNCTION_URL_CODE
+        $url += "/api/" + $package + $env:FUNCTION_URL_CODE
         $env:FUNCTION_URL = $url
               Write-host $url
         Invoke-Pester -Path "./"
