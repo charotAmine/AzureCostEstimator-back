@@ -6,7 +6,7 @@
         "skuName" : "sku_name" 
     },
     "Azure Analysis Services" :{
-        "sku" : "sku-size",
+        "skuName" : "sku",
         "S8v2": "S8 v2",
         "S9v2": "S9 v2"
     },
