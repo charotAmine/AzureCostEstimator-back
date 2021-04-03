@@ -50,6 +50,26 @@ terraform plan -out examplefile.tfplan
 terraform show -json examplefile.tfplan | Out-File myf.json
 ```
 
+```
+$test = iwr "https://prices.azure.com/api/retail/prices"
+$content = $test.Content | ConvertFrom-Json
+$spec = $content.Items | Where {$_.serviceName -like "*anagement*"}
+if($spec -eq $null)
+{
+    while($content.NextPageLink)
+    {
+        $test = iwr $content.NextPageLink
+        $content = $test.Content | ConvertFrom-Json
+        $spec = $content.Items | Where {$_.serviceName -like "*anagement*"}
+        if($spec)
+        {
+            break;
+        }
+    }
+}
+$spec
+```
+
 ## Running the tests
 
 Once you create a Pull Request, GitHub Actions run tests. You won't be able to merge if you don't have these tests green :(

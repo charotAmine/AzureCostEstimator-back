@@ -131,11 +131,19 @@ foreach ($resource in $resources) {
             $jsonBase.Add("serviceDetails",@($list))
             $jsonList.Add($jsonBase)
         }
-
         "api management" {
             $jsonBase = @{}
             $serviceType = "API Management"
             $url = Get-APIManagementUrl -serviceType $serviceType -serviceObject $resource.resourceChangement -serviceProperties $serviceProperties
+            $list = Get-ServicePrice -url $url
+            $jsonBase.Add("serviceType",$serviceType)
+            $jsonBase.Add("serviceDetails",@($list))
+            $jsonList.Add($jsonBase)
+        }
+        "analysis services server" {
+            $jsonBase = @{}
+            $serviceType = "Azure Analysis Services"
+            $url = Get-DefaultUrl -serviceType $serviceType -serviceObject $resource.resourceChangement -serviceProperties $serviceProperties
             $list = Get-ServicePrice -url $url
             $jsonBase.Add("serviceType",$serviceType)
             $jsonBase.Add("serviceDetails",@($list))
