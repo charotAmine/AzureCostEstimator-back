@@ -5,6 +5,11 @@
     "API Management" :{
         "skuName" : "sku_name" 
     },
+    "Azure Analysis Services" :{
+        "skuName" : "sku",
+        "S8v2": "S8 v2",
+        "S9v2": "S9 v2"
+    },
     "Azure App Service" :{
         "skuName" : "sku-size",
         "I1v2": "I1 v2",
